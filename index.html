@@ -3,745 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMLiussss DoH 镜像服务 - 专业 DNS over HTTPS 服务</title>
-    <meta name="description" content="专业的 DoH (DNS over HTTPS) 镜像服务，提供快速、安全、纯净的 DNS 解析服务">
+    <title>CMLiussss DoH 服务状态监测 - DNS over HTTPS 服务实时监控</title>
+    <meta name="description" content="实时监控多个DNS over HTTPS (DoH) 服务的可用性、性能和DNS记录纯净度的状态页面。">
+    <meta name="keywords" content="DoH,DNS over HTTPS,DNS服务,网络监控,性能测试,DNS纯净度">
     <link rel="icon" type="image/x-icon" href="https://raw.cmliussss.com/favicon.ico">
     <link rel="shortcut icon" href="https://raw.cmliussss.com/favicon.ico">
     <link rel="apple-touch-icon" href="https://raw.cmliussss.com/favicon.ico">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            color: white;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-        }
-
-        .doh-list {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .doh-item {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 12px;
-            padding: 20px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .doh-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            border-color: #3498db;
-        }
-
-        .doh-title {
-            font-size: 0.9rem;
-            font-weight: 400;
-            margin-bottom: 12px;
-            color: #666;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .doh-title .provider-logo {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
-        }
-
-        .doh-title .provider-name {
-            font-weight: 700;
-            color: #2c5282;
-        }
-
-        .doh-url {
-            color: #555;
-            text-decoration: none;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 0.85rem;
-            font-weight: 700;
-            word-break: break-all;
-            display: block;
-            margin-bottom: 15px;
-            text-align: center;
-            padding: 8px;
-            background: rgba(52, 152, 219, 0.08);
-            border-radius: 6px;
-            border: 1px solid rgba(52, 152, 219, 0.15);
-            line-height: 1.3;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            justify-content: space-between;
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #cbd5e0;
-            transition: all 0.3s ease;
-        }
-
-        .status-dot.testing {
-            background: #f6ad55;
-            animation: pulse 1.5s infinite;
-        }
-
-        .status-dot.success {
-            background: #48bb78;
-        }
-
-        .status-dot.error {
-            background: #f56565;
-        }
-
-        .response-time {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-left: auto;
-        }
-
-        .response-time.fast {
-            color: #38a169;
-        }
-
-        .response-time.medium {
-            color: #d69e2e;
-        }
-
-        .response-time.slow {
-            color: #e53e3e;
-        }
-
-        .ip-info {
-            margin-top: 15px;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .ip-address {
-            font-family: 'Courier New', monospace;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .ip-location {
-            color: #4a5568;
-            margin-bottom: 8px;
-        }
-
-        .pollution-status {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .pollution-status.clean {
-            background: #c6f6d5;
-            color: #22543d;
-        }
-
-        .pollution-status.suspicious {
-            background: #fed7d7;
-            color: #742a2a;
-        }
-
-        .loading {
-            text-align: center;
-            color: #718096;
-            font-style: italic;
-        }
-
-        .error-message {
-            color: #e53e3e;
-            font-size: 0.9rem;
-        }
-
-        .copy-toast {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
-            background: rgba(39, 174, 96, 0.95);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            z-index: 1000;
-            opacity: 0;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-        }
-
-        .copy-toast.show {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        .stats-summary {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 15px;
-            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-            color: white;
-            border-radius: 10px;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.5;
-            }
-        }
-
-        .footer {
-            text-align: center;
-            color: white;
-            margin-top: 40px;
-            opacity: 0.8;
-        }
-
-        .footer a {
-            color: #90cdf4;
-            text-decoration: none;
-        }
-
-        .copy-tip {
-            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 25px;
-            margin: 25px 0;
-            opacity: 1;
-            font-size: 1rem;
-            font-weight: 600;
-            width: 100%;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-            animation: tipPulse 2s ease-in-out infinite;
-            cursor: default;
-        }
-
-        .copy-tip .tip-icon {
-            margin-right: 10px;
-            font-size: 1.2rem;
-            animation: tipIconBounce 1s ease-in-out infinite;
-        }
-
-        @keyframes tipPulse {
-            0%, 100% {
-                box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-            }
-            50% {
-                box-shadow: 0 6px 20px rgba(39, 174, 96, 0.5);
-            }
-        }
-
-        @keyframes tipIconBounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-2px);
-            }
-        }
-
-        .info-card {
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            -webkit-backdrop-filter: blur(10px);
-            backdrop-filter: blur(10px);
-        }
-
-        .info-card h3 {
-            color: #2d3748;
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .info-section {
-            margin-bottom: 20px;
-        }
-
-        .info-section h4 {
-            color: #4a5568;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .info-section p {
-            color: #2d3748;
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-
-        .info-highlight {
-            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
-            margin-bottom: 30px;
-        }
-
-        .info-item {
-            background: #f7fafc;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #3498db;
-        }
-
-        .info-item strong {
-            color: #2d3748;
-        }
-
-        .refresh-btn {
-            background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-            width: 100%;
-            font-size: 1rem;
-        }
-
-        .refresh-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-            @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .doh-list {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-summary {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1>🚀 CMLiussss DoH 镜像服务</h1>
-            <p>专业的 DNS over HTTPS 服务 | 快速 · 安全 · 纯净</p>
+            <h1>CMLiussss DoH 镜像服务<span class="accent">状态监测</span></h1>
+            <p>实时监控 DNS over HTTPS 服务的可用性、响应速度和解析纯净度。</p>
         </header>
 
-        <div class="card">
+        <section class="card stats-card">
+            <div class="card-header">
+                <h2 class="card-title">📊 统计概览</h2>
+                <button class="refresh-btn" id="refreshBtn" onclick="testAllServers()">
+                    <span class="icon">🔄</span>
+                    <span class="text">刷新状态</span>
+                </button>
+            </div>
             <div class="stats-summary" id="statsSummary">
                 <div class="stat-item">
-                    <div class="stat-value" id="totalServers">4</div>
-                    <div class="stat-label">服务节点</div>
+                    <div class="stat-value" id="totalServers">-</div>
+                    <div class="stat-label">总服务数</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value" id="onlineServers">-</div>
-                    <div class="stat-label">在线节点</div>
+                    <div class="stat-label">在线服务</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value" id="averageResponseTime">-</div>
-                    <div class="stat-label">平均响应时间</div>
+                    <div class="stat-label">平均延迟</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-value" id="cleanServers">-</div>
-                    <div class="stat-label">纯净节点</div>
+                    <div class="stat-label">纯净服务</div>
                 </div>
             </div>
+        </section>
 
-            <button class="refresh-btn" onclick="testAllServers()">🔄 重新测试</button>
-
-            <div class="doh-list" id="dohList">
-                <!-- DoH 服务列表将在这里动态生成 -->
+        <section class="card doh-list-container">
+            <div class="card-header">
+                <h2 class="card-title">🌐 DoH 服务列表</h2>
             </div>
-            
-            <div class="copy-tip">
-                <span class="tip-icon">💡</span>点击上方任意服务模块即可一键复制 DoH 地址
+            <div class="doh-list-header">
+                <span>服务商</span>
+                <span>DoH服务地址</span>
+                <span>状态</span>
+                <span>响应时间</span>
+                <span>纯净度</span>
             </div>
-        </div>
-
-        <div class="card info-card">
-            <h3>📖 功能说明</h3>
-            
-            <div class="info-section">
-                <h4>🔍 自动检测原理</h4>
-                <p>本页面会自动使用各个 DoH 服务解析 <code>www.google.com</code>，通过分析返回的 IP 地址信息来判断 DNS 服务的纯净度。</p>
-                
-                <div class="info-highlight">
-                    <strong>检测流程：</strong><br>
-                    1. 发送 DNS 查询请求到各个 DoH 服务<br>
-                    2. 获取解析结果的第一个 IP 地址<br>
-                    3. 查询该 IP 的归属信息（ISP、组织、AS号）<br>
-                    4. 检查是否包含 "Google" 相关标识
-                </div>
+            <div id="dohList">
+                <!-- DoH服务项目将在这里动态生成 -->
             </div>
+        </section>
 
-            <div class="info-grid">
-                <div class="info-item">
-                    <h4>🟢 纯净状态</h4>
-                    <p><strong>显示条件：</strong>返回的 IP 地址归属于 Google（ISP、组织或 AS 信息包含 "Google"）</p>
-                    <p><strong>意义：</strong>该 DoH 服务未被污染，返回真实的 Google 服务器地址</p>
-                </div>
-                
-                <div class="info-item">
-                    <h4>🔴 疑似污染</h4>
-                    <p><strong>显示条件：</strong>返回的 IP 地址不属于 Google 服务器</p>
-                    <p><strong>可能原因：</strong>DNS 污染、地理位置限制、或运营商劫持</p>
-                </div>
-            </div>
-
-            <div class="info-section">
-                <h4>📊 显示信息说明</h4>
-                <p><strong>响应时间：</strong>从发送请求到收到响应的时间，越低越好</p>
-                <p><strong>IP 地址：</strong>DoH 服务返回的解析结果</p>
-                <p><strong>地理位置：</strong>显示格式为 "国家 地区 组织机构"</p>
-                <p><strong>纯净度：</strong>基于 IP 归属判断的污染状态</p>
-            </div>
-
+        <section class="card info-card">
+            <h3>💡 工作原理</h3>
+            <p>此页面通过解析 <code>www.google.com</code> 来测试每个DoH服务并分析响应结果。</p>
             <div class="info-highlight">
-                <strong>💡 使用建议：</strong><br>
-                优先选择响应时间短且状态为"纯净"的 DoH 服务，以获得最佳的 DNS 解析体验。
+                <p><strong>纯净度检测：</strong> 如果解析的IP地址属于Google的ASN网络，服务会被标记为"纯净"。否则，将被标记为"疑似污染"，这可能表示DNS污染或被重定向。</p>
             </div>
-        </div>
+        </section>
 
         <footer class="footer">
-            <p>Powered by <a href="https://github.com/cmliu" target="_blank" rel="noopener">CMLiussss</a> | Hosted on <a href="https://edgeone.ai/" target="_blank" rel="noopener">EdgeOne Pages</a></p>
+            <p>由 <a href="https://github.com/cmliu" target="_blank" rel="noopener">CMLiussss</a> 强力驱动 | 托管于 <a href="https://edgeone.ai/" target="_blank" rel="noopener">EdgeOne Pages</a></p>
         </footer>
     </div>
 
     <div class="copy-toast" id="copyToast">
-        🎉 复制成功！
+        已复制到剪贴板！
     </div>
 
-    <script>
-        const dohServers = [
-            {
-                name: '谷歌 DoH 镜像',
-                displayName: '<span class="provider-name">谷歌</span> DoH 镜像',
-                url: 'https://doh.cmliussss.com/CMLiussss',
-                provider: 'Google',
-                logo: 'ico/google.ico'
-            },
-            {
-                name: 'Cloudflare DoH 镜像',
-                displayName: '<span class="provider-name">Cloudflare</span> DoH 镜像',
-                url: 'https://doh.cmliussss.net/CMLiussss',
-                provider: 'Cloudflare',
-                logo: 'ico/cloudflare.ico'
-            },
-            {
-                name: '阿里云 DoH 镜像',
-                displayName: '<span class="provider-name">阿里云</span> DoH 镜像',
-                url: 'https://doh.090227.xyz/CMLiussss',
-                provider: 'Aliyun',
-                logo: 'ico/alibabacloud.png'
-            },
-            {
-                name: '腾讯 DoH 镜像',
-                displayName: '<span class="provider-name">腾讯</span> DoH 镜像',
-                url: 'https://dns.090227.xyz/CMLiussss',
-                provider: 'Tencent',
-                logo: 'ico/tencentcloud.ico'
-            }
-        ];
-
-        let testResults = [];
-
-        function createDohItem(server, index) {
-            return `
-                <div class="doh-item" onclick="copyToClipboard('${server.url}')">
-                    <div class="doh-title">
-                        <img src="${server.logo}" alt="${server.provider}" class="provider-logo">
-                        ${server.displayName}
-                    </div>
-                    <a href="${server.url}" class="doh-url" onclick="event.stopPropagation(); return false;">${server.url}</a>
-                    
-                    <div class="status-indicator">
-                        <div class="status-dot" id="status-${index}"></div>
-                        <span id="status-text-${index}" class="loading">正在测试...</span>
-                        <span id="response-time-${index}" class="response-time"></span>
-                    </div>
-                    
-                    <div id="ip-info-${index}" class="ip-info" style="display: none;">
-                        <div class="ip-address" id="ip-address-${index}"></div>
-                        <div class="ip-location" id="ip-location-${index}"></div>
-                        <div class="pollution-status" id="pollution-status-${index}"></div>
-                    </div>
-                    
-                    <div id="error-${index}" class="error-message" style="display: none;"></div>
-                </div>
-            `;
-        }
-
-        function renderDohList() {
-            const dohList = document.getElementById('dohList');
-            dohList.innerHTML = dohServers.map((server, index) => createDohItem(server, index)).join('');
-        }
-
-        async function testDohServer(server, index) {
-            const statusDot = document.getElementById(`status-${index}`);
-            const statusText = document.getElementById(`status-text-${index}`);
-            const responseTimeEl = document.getElementById(`response-time-${index}`);
-            const ipInfoEl = document.getElementById(`ip-info-${index}`);
-            const errorEl = document.getElementById(`error-${index}`);
-
-            // 重置状态
-            statusDot.className = 'status-dot testing';
-            statusText.textContent = '正在测试...';
-            responseTimeEl.textContent = '';
-            ipInfoEl.style.display = 'none';
-            errorEl.style.display = 'none';
-
-            try {
-                const startTime = performance.now();
-                const testUrl = `${server.url}?name=www.google.com&type=A`;
-                
-                const response = await fetch(testUrl);
-                const endTime = performance.now();
-                const responseTime = Math.round(endTime - startTime);
-
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    // 更新状态为成功
-                    statusDot.className = 'status-dot success';
-                    statusText.textContent = '在线';
-                    
-                    // 显示响应时间
-                    responseTimeEl.textContent = `${responseTime}ms`;
-                    responseTimeEl.className = getResponseTimeClass(responseTime);
-                    
-                    // 处理 IP 信息
-                    if (data.Answer && data.Answer.length > 0) {
-                        const firstIp = data.Answer[0].data;
-                        await getIpInfo(firstIp, index);
-                    }
-
-                    return {
-                        success: true,
-                        responseTime,
-                        server: server.name,
-                        ip: data.Answer?.[0]?.data
-                    };
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-            } catch (error) {
-                // 更新状态为错误
-                statusDot.className = 'status-dot error';
-                statusText.textContent = '离线';
-                errorEl.textContent = `错误: ${error.message}`;
-                errorEl.style.display = 'block';
-
-                return {
-                    success: false,
-                    server: server.name,
-                    error: error.message
-                };
-            }
-        }
-
-        async function getIpInfo(ip, index) {
-            try {
-                const ipInfoUrl = `https://doh.090227.xyz/ip-info?ip=${ip}&token=CMLiussss`;
-                const response = await fetch(ipInfoUrl);
-                
-                if (response.ok) {
-                    const ipData = await response.json();
-                    
-                    // 显示 IP 信息
-                    const ipInfoEl = document.getElementById(`ip-info-${index}`);
-                    const ipAddressEl = document.getElementById(`ip-address-${index}`);
-                    const ipLocationEl = document.getElementById(`ip-location-${index}`);
-                    const pollutionStatusEl = document.getElementById(`pollution-status-${index}`);
-                    
-                    ipAddressEl.textContent = `IP: ${ipData.query}`;
-                    ipLocationEl.textContent = `📍 ${ipData.country} ${ipData.regionName} ${ipData.org}`;
-                    
-                    // 检查污染状态
-                    const isClean = checkPollutionStatus(ipData);
-                    pollutionStatusEl.textContent = isClean ? '✅ 纯净' : '⚠️ 疑似污染';
-                    pollutionStatusEl.className = `pollution-status ${isClean ? 'clean' : 'suspicious'}`;
-                    
-                    ipInfoEl.style.display = 'block';
-                    
-                    return isClean;
-                }
-            } catch (error) {
-                console.warn('获取 IP 信息失败:', error);
-            }
-            return false;
-        }
-
-        function checkPollutionStatus(ipData) {
-            const { as, isp, org } = ipData;
-            const fields = [as, isp, org].map(field => (field || '').toLowerCase());
-            return fields.some(field => field.includes('google'));
-        }
-
-        function getResponseTimeClass(responseTime) {
-            if (responseTime < 200) return 'response-time fast';
-            if (responseTime < 500) return 'response-time medium';
-            return 'response-time slow';
-        }
-
-        async function testAllServers() {
-            testResults = [];
-            
-            // 并发测试所有服务器
-            const promises = dohServers.map((server, index) => testDohServer(server, index));
-            testResults = await Promise.all(promises);
-            
-            updateStats();
-        }
-
-        function updateStats() {
-            const onlineServers = testResults.filter(result => result.success).length;
-            const cleanServers = testResults.filter(result => result.success).length; // 这里可以根据实际污染检测结果调整
-            
-            const responseTimes = testResults
-                .filter(result => result.success && result.responseTime)
-                .map(result => result.responseTime);
-            
-            const averageResponseTime = responseTimes.length > 0 
-                ? Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length)
-                : 0;
-
-            document.getElementById('onlineServers').textContent = onlineServers;
-            document.getElementById('averageResponseTime').textContent = averageResponseTime > 0 ? `${averageResponseTime}ms` : '-';
-            document.getElementById('cleanServers').textContent = cleanServers;
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                const toast = document.getElementById('copyToast');
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2000);
-            }).catch(err => {
-                console.warn('复制失败:', err);
-                // 备用方案
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                
-                const toast = document.getElementById('copyToast');
-                toast.classList.add('show');
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                }, 2000);
-            });
-        }
-
-        // 页面加载时初始化
-        document.addEventListener('DOMContentLoaded', () => {
-            renderDohList();
-            testAllServers();
-        });
-    </script>
+    <script src="js/script.js"></script>
 </body>
 </html>

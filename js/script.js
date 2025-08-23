@@ -28,6 +28,11 @@ const dohServers = [
         name: 'DNS.SB',
         url: 'https://doh.090227.xyz/SB-query',
         logo: 'ico/sb.png'
+    },
+    {
+        name: 'NextDNS',
+        url: 'https://doh.090227.xyz/Next-query',
+        logo: 'ico/nextdns.png'
     }
 ];
 

@@ -11,13 +11,23 @@ const dohServers = [
     },
     {
         name: '阿里云',
-        url: 'https://doh.090227.xyz/CMLiussss',
+        url: 'https://doh.090227.xyz/Ali-query',
         logo: 'ico/alibabacloud.png'
     },
     {
         name: '腾讯云',
-        url: 'https://dns.090227.xyz/CMLiussss',
+        url: 'https://doh.090227.xyz/QQ-query',
         logo: 'ico/tencentcloud.ico'
+    },
+    {
+        name: '360',
+        url: 'https://doh.090227.xyz/360-query',
+        logo: 'ico/360.ico'
+    },
+    {
+        name: 'DNS.SB',
+        url: 'https://doh.090227.xyz/SB-query',
+        logo: 'ico/sb.png'
     }
 ];
 
@@ -155,7 +165,7 @@ async function getIpInfo(ip, pollutionStatusEl, locationValueEl, orgValueEl) {
         const isClean = checkPollutionStatus(ipData);
         
         // 更新污染状态显示
-        const statusText = isClean ? '✅ 纯净' : '⚠️ 疑似污染';
+        const statusText = isClean ? '✅ 纯净' : '⚠️ 污染';
         const statusClass = isClean ? 'clean' : 'suspicious';
         pollutionStatusEl.innerHTML = `<span>${statusText}</span>`;
         pollutionStatusEl.className = `pollution-status ${statusClass}`;

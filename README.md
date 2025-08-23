@@ -18,8 +18,10 @@
 |--------|----------|------|
 | **谷歌** | `https://doh.cmliussss.com/CMLiussss` | 全球覆盖，稳定可靠 |
 | **Cloudflare** | `https://doh.cmliussss.net/CMLiussss` | 高性能CDN加速 | 
-| **阿里云** | `https://doh.090227.xyz/CMLiussss` | 国内优化线路 |
-| **腾讯云** | `https://dns.090227.xyz/CMLiussss` | 多节点负载均衡 |
+| **阿里云** | `https://doh.090227.xyz/Ali-query` | 国内优化线路 |
+| **腾讯云** | `https://doh.090227.xyz/QQ-query` | 多节点负载均衡 |
+| **360** | `https://doh.090227.xyz/360-query` | 安全防护增强 |
+| **DNS.SB** | `https://doh.090227.xyz/SB-query` | 开源社区驱动 |
 
 ## 🚀 快速部署
 

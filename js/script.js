@@ -38,6 +38,8 @@ const dohServers = [
 
 let testResults = [];
 let isTesting = false;
+let networkInfo = null;
+let isNetworkInfoHidden = true;
 
 function createDohItemSkeleton(server, index) {
     return `
@@ -200,8 +202,8 @@ function checkPollutionStatus(ipData) {
 }
 
 function getResponseTimeClass(responseTime) {
-    if (responseTime < 200) return 'response-time fast';
-    if (responseTime < 500) return 'response-time medium';
+    if (responseTime < 500) return 'response-time fast';
+    if (responseTime < 1000) return 'response-time medium';
     return 'response-time slow';
 }
 
@@ -227,6 +229,7 @@ async function testAllServers() {
 }
 
 function updateStats() {
+    const totalCount = dohServers.length;
     const onlineCount = testResults.filter(r => r.success).length;
     const cleanCount = testResults.filter(r => r.isClean).length;
     
@@ -238,6 +241,7 @@ function updateStats() {
         ? Math.round(responseTimes.reduce((a, b) => a + b, 0) / responseTimes.length)
         : 0;
 
+    document.getElementById('totalServers').textContent = totalCount;
     document.getElementById('onlineServers').textContent = onlineCount;
     document.getElementById('cleanServers').textContent = cleanCount;
     document.getElementById('averageResponseTime').textContent = avgResponseTime > 0 ? `${avgResponseTime}ms` : '-';
@@ -257,4 +261,119 @@ function copyToClipboard(text) {
 
 document.addEventListener('DOMContentLoaded', () => {
     testAllServers();
+    fetchNetworkInfo();
 });
+
+// 获取网络信息
+async function fetchNetworkInfo() {
+    try {
+        const response = await fetch('https://functions-geolocation.edgeone.app/geo');
+        const data = await response.json();
+        
+        if (data && data.eo && data.eo.geo) {
+            networkInfo = data.eo;
+            updateNetworkInfo();
+        }
+    } catch (error) {
+        console.warn('获取网络信息失败:', error);
+    }
+}
+
+// 更新网络信息显示
+function updateNetworkInfo() {
+    if (!networkInfo) return;
+    
+    const { geo, clientIp } = networkInfo;
+    const networkInfoEl = document.getElementById('networkInfo');
+    const clientIpEl = document.getElementById('clientIp');
+    const locationEl = document.getElementById('location');
+    const ispEl = document.getElementById('isp');
+    const proxyWarningEl = document.getElementById('proxyWarning');
+    
+    // 显示网络信息面板
+    networkInfoEl.classList.remove('hidden');
+    
+    // 更新IP地址（默认隐藏B段和C段）
+    const maskedIp = maskIpAddress(clientIp);
+    clientIpEl.textContent = maskedIp;
+    clientIpEl.dataset.realIp = clientIp;
+    clientIpEl.dataset.maskedIp = maskedIp;
+    
+    // 更新运营商信息（默认显示星号）
+    const realIsp = geo.cisp || '';
+    const maskedIsp = '****';
+    ispEl.textContent = maskedIsp;
+    ispEl.dataset.realIsp = realIsp;
+    ispEl.dataset.maskedIsp = maskedIsp;
+    
+    // 更新地理位置（默认显示星号）
+    const realLocation = `${geo.countryCodeAlpha2} ${geo.regionName} ${geo.cityName}`;
+    const maskedLocation = '** ******* ********';
+    locationEl.textContent = maskedLocation;
+    locationEl.dataset.realLocation = realLocation;
+    locationEl.dataset.maskedLocation = maskedLocation;
+    
+    // 检查是否需要显示代理警告
+    if (geo.countryCodeAlpha2 !== 'CN') {
+        proxyWarningEl.classList.remove('hidden');
+    } else {
+        proxyWarningEl.classList.add('hidden');
+    }
+}
+
+// 隐藏IP地址的B段和C段
+function maskIpAddress(ip) {
+    const parts = ip.split('.');
+    if (parts.length === 4) {
+        return `${parts[0]}.*.*.${parts[3]}`;
+    }
+    return ip;
+}
+
+// 切换所有网络信息显示/隐藏
+function toggleAllNetworkInfo() {
+    const clientIpEl = document.getElementById('clientIp');
+    const ispEl = document.getElementById('isp');
+    const locationEl = document.getElementById('location');
+    
+    if (isNetworkInfoHidden) {
+        // 显示所有真实信息
+        if (clientIpEl.dataset.realIp) {
+            clientIpEl.textContent = clientIpEl.dataset.realIp;
+        }
+        if (ispEl.dataset.realIsp) {
+            ispEl.textContent = ispEl.dataset.realIsp;
+        }
+        if (locationEl.dataset.realLocation) {
+            locationEl.textContent = locationEl.dataset.realLocation;
+        }
+        isNetworkInfoHidden = false;
+    } else {
+        // 隐藏所有信息为星号
+        if (clientIpEl.dataset.maskedIp) {
+            clientIpEl.textContent = clientIpEl.dataset.maskedIp;
+        }
+        if (ispEl.dataset.maskedIsp) {
+            ispEl.textContent = ispEl.dataset.maskedIsp;
+        }
+        if (locationEl.dataset.maskedLocation) {
+            locationEl.textContent = locationEl.dataset.maskedLocation;
+        }
+        isNetworkInfoHidden = true;
+    }
+}
+
+// IP地址点击事件
+function toggleIpDisplay(element) {
+    toggleAllNetworkInfo();
+}
+
+// 运营商点击事件
+function toggleIspDisplay(element) {
+    toggleAllNetworkInfo();
+}
+
+// 地理位置点击事件
+function toggleLocationDisplay(element) {
+    toggleAllNetworkInfo();
+}

@@ -44,6 +44,25 @@
                     <div class="stat-label">纯净服务</div>
                 </div>
             </div>
+            <div class="network-info hidden" id="networkInfo">
+                <div class="network-container">
+                    <h3 class="network-title">🌐 网络信息</h3>
+                    <div class="network-details">
+                        <div class="network-item">
+                            <span class="network-label">IP地址：</span>
+                            <span class="network-value ip-address" id="clientIp" onclick="toggleIpDisplay(this)">-</span>
+                            <span class="network-value isp-info" id="isp" onclick="toggleIspDisplay(this)">-</span>
+                        </div>
+                        <div class="network-item">
+                            <span class="network-label">地理位置：</span>
+                            <span class="network-value location-info" id="location" onclick="toggleLocationDisplay(this)">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="proxy-warning hidden" id="proxyWarning">
+                    <small>💡 关闭代理后查看当前页面更准确</small>
+                </div>
+            </div>
         </section>
 
         <section class="card doh-list-container">

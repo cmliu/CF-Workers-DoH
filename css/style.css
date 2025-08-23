@@ -373,6 +373,117 @@ body {
     font-weight: 500;
 }
 
+/* 网络信息样式 */
+.network-info {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--color-border);
+}
+
+.network-info.hidden {
+    display: none;
+}
+
+.network-title {
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+    margin: 0;
+    font-weight: 600;
+}
+
+.network-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.network-details {
+    display: flex;
+    flex: 1;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 30px;
+}
+
+.network-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.network-label {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    min-width: 70px;
+}
+
+.network-value {
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.ip-address {
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all var(--transition-speed) ease;
+}
+
+.ip-address:hover {
+    background: var(--color-bg-primary);
+    color: var(--color-accent);
+}
+
+.isp-info {
+    margin-left: 8px;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all var(--transition-speed) ease;
+}
+
+.isp-info:hover {
+    background: var(--color-bg-primary);
+    color: var(--color-accent);
+}
+
+.location-info {
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all var(--transition-speed) ease;
+}
+
+.location-info:hover {
+    background: var(--color-bg-primary);
+    color: var(--color-accent);
+}
+
+.proxy-warning {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: var(--border-radius-sm);
+    text-align: center;
+}
+
+.proxy-warning.hidden {
+    display: none;
+}
+
+.proxy-warning small {
+    color: #ffc107;
+    font-size: 0.8rem;
+}
+
 .refresh-btn {
     background: var(--color-gradient-accent);
     color: white;
@@ -692,5 +803,39 @@ body {
     
     .stat-value {
         font-size: 1.6rem;
+    }
+
+    /* 移动端网络信息样式 */
+    .network-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .network-details {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .network-item {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .network-label {
+        min-width: auto;
+        font-size: 0.8rem;
+    }
+
+    .network-value {
+        font-size: 0.85rem;
+    }
+
+    .isp-info {
+        margin-left: 4px;
     }
 }

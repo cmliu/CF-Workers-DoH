@@ -170,7 +170,7 @@ async function getIpInfo(ip, pollutionStatusEl, locationValueEl, orgValueEl) {
         const isClean = checkPollutionStatus(ipData);
         
         // 更新污染状态显示
-        const statusText = isClean ? '✅ 纯净' : '⚠️ 污染';
+        const statusText = isClean ? '✅ 纯净' : '🚫 污染';
         const statusClass = isClean ? 'clean' : 'suspicious';
         pollutionStatusEl.innerHTML = `<span>${statusText}</span>`;
         pollutionStatusEl.className = `pollution-status ${statusClass}`;

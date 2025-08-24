@@ -25,6 +25,11 @@ const dohServers = [
         logo: 'ico/360.ico'
     },
     {
+        name: 'AdGuard',
+        url: 'https://doh.090227.xyz/AdG-query',
+        logo: 'ico/AdGuard.ico'
+    },
+    {
         name: 'DNS.SB',
         url: 'https://doh.090227.xyz/SB-query',
         logo: 'ico/sb.png'

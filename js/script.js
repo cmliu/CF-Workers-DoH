@@ -178,7 +178,7 @@ async function testDohServer(server, index) {
 
 async function getIpInfo(ip, pollutionStatusEl, locationValueEl, orgValueEl) {
     try {
-        const ipInfoUrl = `http://ip-api.com/json/${ip}?lang=zh-CN`;
+        const ipInfoUrl = `https://cm-doh.pages.dev/ip-info?ip=${ip}&token=CMLiussss`;
         const response = await fetch(ipInfoUrl, { cache: 'no-store' });
         
         if (!response.ok) {

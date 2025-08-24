@@ -33,6 +33,11 @@ const dohServers = [
         name: 'NextDNS',
         url: 'https://doh.090227.xyz/Next-query',
         logo: 'ico/nextdns.png'
+    },
+    {
+        name: 'v.recipes',
+        url: 'https://doh.090227.xyz/V-query',
+        logo: 'ico/v.recipes.png'
     }
 ];
 

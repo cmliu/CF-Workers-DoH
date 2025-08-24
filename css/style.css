@@ -301,6 +301,35 @@ body {
 .pollution-status.clean { color: var(--color-success); }
 .pollution-status.suspicious { color: var(--color-error); }
 
+/* 污染状态的DoH服务地址样式 */
+.doh-url.polluted {
+    color: var(--color-error) !important;
+    text-decoration: line-through;
+    opacity: 0.8;
+    transition: all var(--transition-speed) ease;
+}
+
+.doh-url.polluted:hover {
+    opacity: 1;
+}
+
+/* 污染状态的服务商样式 */
+.doh-provider.polluted {
+    color: var(--color-error) !important;
+    text-decoration: line-through;
+    opacity: 0.8;
+    transition: all var(--transition-speed) ease;
+}
+
+.doh-provider.polluted:hover {
+    opacity: 1;
+}
+
+/* 污染状态的状态点样式 */
+.status-dot.polluted {
+    background-color: var(--color-error);
+}
+
 .loading-skeleton .doh-item > div {
     background: var(--color-bg-tertiary);
     color: transparent;

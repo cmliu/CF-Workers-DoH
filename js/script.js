@@ -104,6 +104,8 @@ async function testDohServer(server, index) {
     const statusEl = itemEl.querySelector('.status');
     const responseTimeEl = itemEl.querySelector('.response-time');
     const pollutionStatusEl = itemEl.querySelector('.pollution-status');
+    const dohUrlEl = itemEl.querySelector('.doh-url');
+    const dohProviderEl = itemEl.querySelector('.doh-provider');
     
     // 获取详细信息元素
     const ipValueEl = itemEl.querySelector('.ip-value');
@@ -116,6 +118,14 @@ async function testDohServer(server, index) {
     pollutionStatusEl.innerHTML = '<span>---</span>';
     responseTimeEl.className = 'response-time';
     pollutionStatusEl.className = 'pollution-status';
+    
+    // 重置污染状态样式
+    dohUrlEl.classList.remove('polluted');
+    dohProviderEl.classList.remove('polluted');
+    const statusDotEl = itemEl.querySelector('.status-dot');
+    if (statusDotEl) {
+        statusDotEl.classList.remove('polluted');
+    }
     
     // 重置详细信息
     ipValueEl.textContent = '---';
@@ -168,7 +178,7 @@ async function testDohServer(server, index) {
 
 async function getIpInfo(ip, pollutionStatusEl, locationValueEl, orgValueEl) {
     try {
-        const ipInfoUrl = `https://doh.090227.xyz/ip-info?ip=${ip}&token=CMLiussss`;
+        const ipInfoUrl = `http://ip-api.com/json/${ip}?lang=zh-CN`;
         const response = await fetch(ipInfoUrl, { cache: 'no-store' });
         
         if (!response.ok) {
@@ -186,6 +196,29 @@ async function getIpInfo(ip, pollutionStatusEl, locationValueEl, orgValueEl) {
         const statusClass = isClean ? 'clean' : 'suspicious';
         pollutionStatusEl.innerHTML = `<span>${statusText}</span>`;
         pollutionStatusEl.className = `pollution-status ${statusClass}`;
+        
+        // 根据纯净度状态更新相关元素的样式
+        const dohItem = pollutionStatusEl.closest('.doh-item');
+        const dohUrlEl = dohItem.querySelector('.doh-url');
+        const dohProviderEl = dohItem.querySelector('.doh-provider');
+        const statusDotEl = dohItem.querySelector('.status-dot');
+        
+        if (!isClean) {
+            // 添加污染样式
+            dohUrlEl.classList.add('polluted');
+            dohProviderEl.classList.add('polluted');
+            if (statusDotEl) {
+                statusDotEl.classList.add('polluted');
+                statusDotEl.classList.remove('success'); // 移除成功状态样式
+            }
+        } else {
+            // 移除污染样式
+            dohUrlEl.classList.remove('polluted');
+            dohProviderEl.classList.remove('polluted');
+            if (statusDotEl) {
+                statusDotEl.classList.remove('polluted');
+            }
+        }
         
         // 更新详细信息行
         const location = `${ipData.country || '未知'} ${ipData.regionName || ''}`.trim();
